@@ -2,91 +2,118 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
-    <title>Слияние фотографий - Удаление фона</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Слияние фотографий — Удаление фона</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="scale-indicator" id="scaleIndicator">Масштаб: 100%</div>
 
-    <div class="main-container" id="mainContainer">
+    <!-- UI scale indicator (shown briefly on zoom) -->
+    <div class="scale-indicator" id="scaleIndicator">UI: 100%</div>
+
+    <!-- Sidebar backdrop (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-layout" id="mainContainer">
+
+        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-resizer" id="sidebarResizer"></div>
-            
+
+            <!-- Resize handle (desktop) -->
+            <div class="resize-handle" id="sidebarResizer"></div>
+
+            <!-- Sidebar header -->
             <div class="sidebar-header">
-                <h1>🎨 Слияние</h1>
-                <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="zoomUI(-0.1)" title="Уменьшить UI">−</button>
-                    <div class="zoom-display" id="uiZoomDisplay">100%</div>
-                    <button class="zoom-btn" onclick="zoomUI(0.1)" title="Увеличить UI">+</button>
+                <button class="btn-sidebar-close" onclick="toggleSidebar()" title="Закрыть">✕</button>
+                <span class="app-title">🎨 Слияние</span>
+                <div class="ui-scale-wrap">
+                    <label title="Масштаб UI">UI</label>
+                    <button class="zoom-btn" onclick="zoomUI(-0.1)" title="Уменьшить">−</button>
+                    <span id="uiZoomDisplay">100%</span>
+                    <button class="zoom-btn" onclick="zoomUI(0.1)" title="Увеличить">+</button>
                 </div>
             </div>
-            
-            <div class="sidebar-content">
-                <!-- СЛОИ -->
-                <div class="upload-section">
-                    <div class="upload-title">Слой 1</div>
-                    <div class="upload-card" id="layer1Card" data-layer="1">
-                        <div class="active-layer-badge">Активен</div>
-                        <input type="file" id="file1" accept="image/*">
-                        <div class="upload-placeholder">
+
+            <!-- Layer cards -->
+            <div class="layers-section">
+                <div class="section-title">Слои</div>
+
+                <!-- Layer 1 -->
+                <div class="layer-card upload-card" id="layer1Card" data-layer="1">
+                    <div class="layer-card-header">
+                        <span class="layer-name">Слой 1</span>
+                        <button class="btn-icon btn-delete layer-control-btn" onclick="removeLayer(1)" title="Удалить слой">✕</button>
+                    </div>
+                    <input type="file" id="file1" accept="image/*">
+                    <div class="upload-placeholder">
+                        <div class="placeholder-thumb">
                             <div class="upload-placeholder-icon">📷</div>
-                            <div class="upload-placeholder-text">Загрузить</div>
-                        </div>
-                        <img id="preview1" class="upload-preview" style="display:none;">
-                        <div class="layer-controls">
-                            <button class="layer-control-btn" onclick="selectLayer(1)">Выбрать</button>
-                            <button class="layer-control-btn" onclick="removeLayer(1)">✕</button>
+                            <span class="drop-hint">Загрузить фото</span>
                         </div>
                     </div>
+                    <img id="preview1" class="upload-preview" style="display:none" alt="Слой 1">
+                    <div class="layer-controls">
+                        <button class="layer-control-btn btn-choose" onclick="selectLayer(1)">Выбрать</button>
+                    </div>
+                    <div class="active-layer-badge">Активен</div>
                 </div>
 
-                <div class="upload-section">
-                    <div class="upload-title">Слой 2</div>
-                    <div class="upload-card" id="layer2Card" data-layer="2">
-                        <div class="active-layer-badge">Активен</div>
-                        <input type="file" id="file2" accept="image/*">
-                        <div class="upload-placeholder">
+                <!-- Layer 2 -->
+                <div class="layer-card upload-card" id="layer2Card" data-layer="2">
+                    <div class="layer-card-header">
+                        <span class="layer-name">Слой 2</span>
+                        <button class="btn-icon btn-delete layer-control-btn" onclick="removeLayer(2)" title="Удалить слой">✕</button>
+                    </div>
+                    <input type="file" id="file2" accept="image/*">
+                    <div class="upload-placeholder">
+                        <div class="placeholder-thumb">
                             <div class="upload-placeholder-icon">📷</div>
-                            <div class="upload-placeholder-text">Загрузить</div>
-                        </div>
-                        <img id="preview2" class="upload-preview" style="display:none;">
-                        <div class="layer-controls">
-                            <button class="layer-control-btn" onclick="selectLayer(2)">Выбрать</button>
-                            <button class="layer-control-btn" onclick="removeLayer(2)">✕</button>
+                            <span class="drop-hint">Загрузить фото</span>
                         </div>
                     </div>
+                    <img id="preview2" class="upload-preview" style="display:none" alt="Слой 2">
+                    <div class="layer-controls">
+                        <button class="layer-control-btn btn-choose" onclick="selectLayer(2)">Выбрать</button>
+                    </div>
+                    <div class="active-layer-badge">Активен</div>
                 </div>
 
-                <div class="upload-section">
-                    <div class="upload-title">Слой 3</div>
-                    <div class="upload-card" id="layer3Card" data-layer="3">
-                        <div class="active-layer-badge">Активен</div>
-                        <input type="file" id="file3" accept="image/*">
-                        <div class="upload-placeholder">
+                <!-- Layer 3 -->
+                <div class="layer-card upload-card" id="layer3Card" data-layer="3">
+                    <div class="layer-card-header">
+                        <span class="layer-name">Слой 3</span>
+                        <button class="btn-icon btn-delete layer-control-btn" onclick="removeLayer(3)" title="Удалить слой">✕</button>
+                    </div>
+                    <input type="file" id="file3" accept="image/*">
+                    <div class="upload-placeholder">
+                        <div class="placeholder-thumb">
                             <div class="upload-placeholder-icon">📷</div>
-                            <div class="upload-placeholder-text">Загрузить</div>
-                        </div>
-                        <img id="preview3" class="upload-preview" style="display:none;">
-                        <div class="layer-controls">
-                            <button class="layer-control-btn" onclick="selectLayer(3)">Выбрать</button>
-                            <button class="layer-control-btn" onclick="removeLayer(3)">✕</button>
+                            <span class="drop-hint">Загрузить фото</span>
                         </div>
                     </div>
+                    <img id="preview3" class="upload-preview" style="display:none" alt="Слой 3">
+                    <div class="layer-controls">
+                        <button class="layer-control-btn btn-choose" onclick="selectLayer(3)">Выбрать</button>
+                    </div>
+                    <div class="active-layer-badge">Активен</div>
                 </div>
+            </div>
 
-                <!-- Табы -->
-                <div class="layer-tabs">
+            <!-- Tabs -->
+            <div class="tabs-wrap">
+                <div class="tab-bar">
                     <button class="tab-btn active" onclick="switchTab('basic')">⚙️ Базовые</button>
                     <button class="tab-btn" onclick="switchTab('filters')">🎨 Фильтры</button>
                     <button class="tab-btn" onclick="switchTab('effects')">✨ Эффекты</button>
                     <button class="tab-btn" onclick="switchTab('background')">🗑️ Фон</button>
                 </div>
 
-                <!-- ТАБ: Базовые настройки -->
+                <!-- TAB: Базовые настройки -->
                 <div class="tab-content active" id="tab-basic">
                     <div class="upload-title">⚙️ Слой <span id="activeLayerNum">1</span></div>
-                    
+
                     <div class="param-group">
                         <div class="param-label">
                             <span>👻 Прозрачность</span>
@@ -151,10 +178,10 @@
                     </div>
                 </div>
 
-                <!-- ТАБ: Фильтры -->
+                <!-- TAB: Фильтры -->
                 <div class="tab-content" id="tab-filters">
-                    <div class="upload-title">🎨 Фильтры слоя <span id="activeLayerNum2">1</span></div>
-                    
+                    <div class="upload-title">🎨 Фильтры — Слой <span id="activeLayerNum2">1</span></div>
+
                     <div class="param-group">
                         <div class="param-label">
                             <span>☀️ Яркость</span>
@@ -196,9 +223,7 @@
                     </div>
 
                     <div class="param-group">
-                        <div class="param-label">
-                            <span>Пресеты</span>
-                        </div>
+                        <div class="param-label"><span>Пресеты</span></div>
                         <div class="filter-presets">
                             <button class="preset-btn" onclick="applyPreset('none')">Сброс</button>
                             <button class="preset-btn" onclick="applyPreset('bw')">Ч/Б</button>
@@ -210,10 +235,10 @@
                     </div>
                 </div>
 
-                <!-- ТАБ: Эффекты -->
+                <!-- TAB: Эффекты -->
                 <div class="tab-content" id="tab-effects">
-                    <div class="upload-title">✨ Эффекты слоя <span id="activeLayerNum3">1</span></div>
-                    
+                    <div class="upload-title">✨ Эффекты — Слой <span id="activeLayerNum3">1</span></div>
+
                     <div class="param-group">
                         <div class="param-label">
                             <span>🌫️ Размытие</span>
@@ -255,9 +280,7 @@
                     </div>
 
                     <div class="param-group">
-                        <div class="param-label">
-                            <span>Быстрые эффекты</span>
-                        </div>
+                        <div class="param-label"><span>Быстрые эффекты</span></div>
                         <div class="filter-presets">
                             <button class="preset-btn" onclick="applyEffect('none')">Сброс</button>
                             <button class="preset-btn" onclick="applyEffect('soft')">Мягко</button>
@@ -269,17 +292,12 @@
                     </div>
                 </div>
 
-                <!-- ТАБ: Удаление фона (НОВОЕ!) -->
+                <!-- TAB: Удаление фона -->
                 <div class="tab-content" id="tab-background">
-                    <div class="upload-title">🗑️ Удаление фона слоя <span id="activeLayerNum4">1</span></div>
-                    
+                    <div class="upload-title">🗑️ Фон — Слой <span id="activeLayerNum4">1</span></div>
+
                     <div class="param-group">
-                        <div class="param-label">
-                            <span>📝 Инструкция</span>
-                        </div>
-                        <p style="color: #888; font-size: 0.85em; line-height: 1.5; margin-top: 8px;">
-                            Выберите метод удаления фона. Автоматические методы работают по краям изображения и определяют фон по цвету.
-                        </p>
+                        <p>Выберите метод удаления фона. Автоматические методы определяют фон по цвету краёв изображения.</p>
                     </div>
 
                     <div class="param-group">
@@ -288,47 +306,35 @@
                             <span class="param-value" id="thresholdVal">30</span>
                         </div>
                         <input type="range" id="threshold" min="1" max="100" value="30" step="1">
-                        <p style="color: #666; font-size: 0.75em; margin-top: 5px;">
-                            Чем выше значение, тем больше похожих цветов будет удалено
-                        </p>
+                        <p>Чем выше значение, тем больше похожих цветов будет удалено</p>
                     </div>
 
                     <div class="param-group">
-                        <div class="param-label">
-                            <span>🎨 Методы удаления</span>
-                        </div>
+                        <div class="param-label"><span>🎨 Методы удаления</span></div>
                         <div class="bg-removal-grid">
                             <button class="bg-removal-btn" onclick="removeBackground('white')">
-                                <span>⚪</span>
-                                <span>Белый фон</span>
+                                <span>⚪</span><span>Белый фон</span>
                             </button>
                             <button class="bg-removal-btn" onclick="removeBackground('black')">
-                                <span>⚫</span>
-                                <span>Черный фон</span>
+                                <span>⚫</span><span>Чёрный фон</span>
                             </button>
                             <button class="bg-removal-btn" onclick="removeBackground('green')">
-                                <span>🟢</span>
-                                <span>Зеленый фон</span>
+                                <span>🟢</span><span>Зелёный фон</span>
                             </button>
                             <button class="bg-removal-btn" onclick="removeBackground('blue')">
-                                <span>🔵</span>
-                                <span>Синий фон</span>
+                                <span>🔵</span><span>Синий фон</span>
                             </button>
                             <button class="bg-removal-btn" onclick="removeBackground('auto')">
-                                <span>🤖</span>
-                                <span>Авто (края)</span>
+                                <span>🤖</span><span>Авто (края)</span>
                             </button>
                             <button class="bg-removal-btn" onclick="restoreBackground()">
-                                <span>↺</span>
-                                <span>Восстановить</span>
+                                <span>↺</span><span>Восстановить</span>
                             </button>
                         </div>
                     </div>
 
                     <div class="param-group">
-                        <div class="param-label">
-                            <span>🔧 Точная настройка</span>
-                        </div>
+                        <div class="param-label"><span>🔧 Точная настройка</span></div>
                         <div class="quick-actions">
                             <button class="quick-btn" onclick="expandTransparency()">➕ Расширить</button>
                             <button class="quick-btn" onclick="shrinkTransparency()">➖ Сжать</button>
@@ -337,55 +343,57 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+            </div><!-- /tabs-wrap -->
         </aside>
 
-        <button class="toggle-sidebar" onclick="toggleSidebar()">
-            <span id="toggleIcon">◀</span>
-        </button>
-
+        <!-- ===== WORKSPACE ===== -->
         <main class="workspace">
+
+            <!-- Toolbar -->
             <div class="toolbar">
+                <button class="btn-tool btn-sidebar-toggle" onclick="toggleSidebar()" title="Панель слоёв">
+                    <span id="toggleIcon">◀</span>
+                </button>
+                <div class="toolbar-sep toolbar-sep-toggle"></div>
+
                 <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="document.getElementById('file1').click()">
-                        <span class="emoji">📁</span> <span>Слой 1</span>
+                    <button class="btn-tool" onclick="document.getElementById('file1').click()" title="Загрузить слой 1">
+                        📁 Слой 1
                     </button>
-                    <button class="toolbar-btn" onclick="document.getElementById('file2').click()">
-                        <span class="emoji">📁</span> <span>Слой 2</span>
+                    <button class="btn-tool" onclick="document.getElementById('file2').click()" title="Загрузить слой 2">
+                        �� Слой 2
                     </button>
-                    <button class="toolbar-btn" onclick="document.getElementById('file3').click()">
-                        <span class="emoji">📁</span> <span>Слой 3</span>
+                    <button class="btn-tool" onclick="document.getElementById('file3').click()" title="Загрузить слой 3">
+                        📁 Слой 3
                     </button>
                 </div>
 
-                <div class="toolbar-divider"></div>
+                <div class="toolbar-sep"></div>
 
                 <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="zoomCanvasBy(-0.1)"><span class="emoji">🔍</span> <span>−</span></button>
-                    <button class="toolbar-btn" onclick="resetCanvasZoom()"><span class="emoji">↺</span> <span>100%</span></button>
-                    <button class="toolbar-btn" onclick="zoomCanvasBy(0.1)"><span class="emoji">🔍</span> <span>+</span></button>
-                </div>
-
-                <div class="toolbar-divider"></div>
-
-                <div class="toolbar-group">
-                    <button class="toolbar-btn" onclick="fitCanvas()"><span class="emoji">📐</span> <span>Подогнать</span></button>
-                    <button class="toolbar-btn" onclick="centerCanvas()"><span class="emoji">🎯</span> <span>Центр</span></button>
+                    <button class="btn-tool" onclick="zoomCanvasBy(-0.1)" title="Уменьшить холст">−</button>
+                    <span class="zoom-display" id="canvasZoomIndicator">100%</span>
+                    <button class="btn-tool" onclick="zoomCanvasBy(0.1)" title="Увеличить холст">+</button>
+                    <button class="btn-tool" onclick="resetCanvasZoom()" title="Сбросить масштаб">↺</button>
+                    <button class="btn-tool" onclick="fitCanvas()" title="Подогнать">Fit</button>
+                    <button class="btn-tool" onclick="centerCanvas()" title="Центрировать">⊕</button>
                 </div>
 
                 <div class="spacer"></div>
 
                 <div class="toolbar-group">
-                    <button class="toolbar-btn success" onclick="downloadImage()">
-                        <span class="emoji">💾</span> <span>Скачать</span>
+                    <button class="btn-tool btn-download" onclick="downloadImage()" title="Сохранить PNG">
+                        💾 Скачать
                     </button>
-                    <button class="toolbar-btn danger" onclick="resetAll()">
-                        <span class="emoji">🗑️</span> <span>Очистить</span>
+                    <button class="btn-tool btn-danger" onclick="resetAll()" title="Очистить всё">
+                        🗑️ Очистить
                     </button>
                 </div>
             </div>
 
-            <div class="canvas-wrapper" id="canvasWrapper">
+            <!-- Canvas viewport -->
+            <div class="canvas-viewport" id="canvasWrapper">
                 <div class="canvas-container" id="canvasContainer">
                     <canvas id="canvas" width="1400" height="900"></canvas>
                     <div class="canvas-overlay" id="canvasOverlay">
@@ -393,43 +401,31 @@
                         <div class="canvas-overlay-text">Загрузите фотографии</div>
                     </div>
                 </div>
-
-                <div class="canvas-zoom-indicator" id="canvasZoomIndicator">
-                    Canvas: 100%
-                </div>
-
-                <div class="canvas-zoom-controls">
-                    <button class="canvas-zoom-btn" onclick="zoomCanvasBy(-0.2)" title="Уменьшить">−</button>
-                    <button class="canvas-zoom-btn reset" onclick="resetCanvasZoom()" title="Сбросить">100%</button>
-                    <button class="canvas-zoom-btn" onclick="zoomCanvasBy(0.2)" title="Увеличить">+</button>
-                </div>
             </div>
 
-            <div class="bottom-bar">
-                <div class="info-group">
-                    <div class="info-item">
-                        <span>Слой:</span>
-                        <strong style="color: #0078d4;" id="bottomLayerNum">1</strong>
-                    </div>
-                    <div class="info-divider"></div>
-                    <div class="info-item">
-                        <span>Режим:</span>
-                        <strong id="currentBlendMode">Обычный</strong>
-                    </div>
-                    <div class="info-divider"></div>
-                    <div class="info-item">
-                        <span>Zoom:</span>
-                        <strong id="bottomCanvasZoom">100%</strong>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <span>💡 Удаление фона доступно</span>
-                </div>
+            <!-- Status bar -->
+            <div class="status-bar">
+                <span>
+                    Слой:&nbsp;<strong id="bottomLayerNum">1</strong>
+                    &nbsp;|&nbsp;
+                    Режим:&nbsp;<strong id="currentBlendMode">Обычный</strong>
+                    &nbsp;|&nbsp;
+                    Zoom:&nbsp;<strong id="bottomCanvasZoom">100%</strong>
+                </span>
+                <span class="status-right">💡 Удаление фона доступно</span>
             </div>
+
         </main>
     </div>
 
-    <div class="hint hidden" id="hint">Совет</div>
+    <!-- Hint toast -->
+    <div class="hint hidden" id="hint"></div>
+
+    <!-- Loading spinner -->
+    <div class="spinner-overlay" id="spinnerOverlay" style="display:none">
+        <div class="spinner"></div>
+        <div class="spinner-label" id="spinnerLabel">Обработка…</div>
+    </div>
 
     <script src="script.js"></script>
 </body>
